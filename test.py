@@ -6,16 +6,6 @@ Created on Sat Apr 27 19:44:53 2019
 @author: Hrishikesh S
 """
 
-# -*- coding: utf-8 -*-
-'''
-Created on Sat Apr 14 18:34:08 2019
-
-AUTHORS  :   Hrishikesh S.
-             C. Anjana Keshav Das
-COMMENTS :   # for explanantion
-             ## for removing code
-             Do not remove code, only comment it
-'''
 # PATH :: cd "Desktop/Third Year/NLP/Project/ProjectV1"
 # To run the code, $ python3 pytorch_train.py
 from io import open
@@ -305,18 +295,6 @@ def evaluate(encoder, decoder, sentence, max_length=MAX_LENGTH):
             decoder_input = topi.squeeze().detach()
 
         return decoded_words, decoder_attentions[:di + 1]
-
-# to test the model with training corpus data
-
-def evaluateRandomly(encoder, decoder, n=10):
-    for i in range(n):
-        pair = random.choice(pairs)
-        print('>', pair[0])
-        print('=', pair[1])
-        output_words, attentions = evaluate(encoder, decoder, pair[0])
-        output_sentence = ' '.join(output_words)
-        print('<', output_sentence)
-        print('')
 
 # initialize & train
 hidden_size = 256
