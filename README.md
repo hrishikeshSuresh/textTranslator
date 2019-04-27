@@ -3,7 +3,7 @@
 
 <h2> Description </h2>
 <h3>  1. data contains the aligned corpus of Shakespearean & Modern English </h3>
-<h3>  2. media contains the video on the project </h3>
+<h3>  2. media contains the video on the project and project report</h3>
 <h3>  3. models contains the pre-trained models </h3>
 <h3>  4. plots contains plots of attention matrices of tests & losses during training.</h3>
 <h3>  5. test.py is used for testing the model. The pre-trained model will be used.</h3>
