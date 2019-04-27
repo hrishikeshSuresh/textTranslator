@@ -9,7 +9,7 @@
 <h3>  5. test.py is used for testing the model. The pre-trained model will be used.</h3>
 				<h4> To run the code, </h4>
 						$ python3 test.py
-<h3>  6. train.py is used to train the model. Trained for around 75000 iterations. </h3>
+<h3>  6. train.py is used to train the model. Training for around 75000 iterations. </h3>
 				<h4> To run the code, </h4>
 						$ python3 train.py
 <h3>  7. requirements.txt contains list of modules needed to run the code.
