@@ -131,11 +131,6 @@ def readLangs(lang1, lang2, reverse=False):
       temp.append(original[i])
       temp.append(modern[i])
       word_pairs.append(temp)
-    ##if reverse:
-        ##word_pairs = [list(reversed(p)) for p in word_pairs]
-        ##input_lang = Lang(lang2)
-        ##output_lang = Lang(lang1)
-    ##else:
     # to return vocabulary's indices, counts
     input_lang = Lang(lang1)
     output_lang = Lang(lang2)

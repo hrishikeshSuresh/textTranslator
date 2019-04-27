@@ -138,11 +138,6 @@ def readLangs(lang1, lang2, reverse=False):
       temp.append(original[i])
       temp.append(modern[i])
       word_pairs.append(temp)
-    ##if reverse:
-        ##word_pairs = [list(reversed(p)) for p in word_pairs]
-        ##input_lang = Lang(lang2)
-        ##output_lang = Lang(lang1)
-    ##else:
     # to return vocabulary's indices, counts
     input_lang = Lang(lang1)
     output_lang = Lang(lang2)
@@ -268,75 +263,6 @@ def tensorsFromPair(pair):
 # for faster convergence
 # can pick up meaning by using just first few words
 teacher_forcing_ratio = 0.5
-
-# function to build the model which is used for training
-def train(input_tensor, target_tensor, encoder, decoder, encoder_optimizer, decoder_optimizer, criterion, max_length=MAX_LENGTH):
-    encoder_hidden = encoder.initHidden()
-    # set the gradients to zero before starting to do backpropragation
-    # as PyTorch accumulates the gradients on subsequent backward passes
-    encoder_optimizer.zero_grad()
-    decoder_optimizer.zero_grad()
-    # using tensor size of input & target to decide
-    # input and output for encoder & decoder model respectively
-    input_length = input_tensor.size(0)
-    target_length = target_tensor.size(0)
-
-    encoder_outputs = torch.zeros(max_length, encoder.hidden_size, device=device)
-
-    loss = 0
-    # building input layer
-    for ei in range(input_length):
-        encoder_output, encoder_hidden = encoder(
-            input_tensor[ei], encoder_hidden)
-        encoder_outputs[ei] = encoder_output[0, 0]
-
-    decoder_input = torch.tensor([[SOS_token]], device=device)
-
-    decoder_hidden = encoder_hidden
-    # teacher forcing is done randomly
-    use_teacher_forcing = True if random.random() < teacher_forcing_ratio else False
-    if use_teacher_forcing:
-        # teacher forcing: feed the target as the next input
-        for di in range(target_length):
-            decoder_output, decoder_hidden, decoder_attention = decoder(
-                decoder_input, decoder_hidden, encoder_outputs)
-            loss += criterion(decoder_output, target_tensor[di])
-            decoder_input = target_tensor[di]
-
-    else:
-        # Without teacher forcing: use its own predictions as the next input
-        for di in range(target_length):
-            decoder_output, decoder_hidden, decoder_attention = decoder(
-                decoder_input, decoder_hidden, encoder_outputs)
-            topv, topi = decoder_output.topk(1)
-            # detach from history as input
-            decoder_input = topi.squeeze().detach()  
-
-            loss += criterion(decoder_output, target_tensor[di])
-            if decoder_input.item() == EOS_token:
-                break
-
-    loss.backward()
-
-    encoder_optimizer.step()
-    decoder_optimizer.step()
-
-    return loss.item() / target_length
-
-
-# to show minutes while training
-def asMinutes(s):
-    m = math.floor(s / 60)
-    s -= m * 60
-    return '%dm %ds' % (m, s)
-
-# to show timeSince
-def timeSince(since, percent):
-    now = time.time()
-    s = now - since
-    es = s / (percent)
-    rs = es - s
-    return '%s (- %s)' % (asMinutes(s), asMinutes(rs))
 
 import matplotlib.pyplot as plt
 plt.switch_backend('agg')
