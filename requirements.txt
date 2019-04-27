@@ -1,0 +1,7 @@
+1. It is better if the PC has a GPU. CPU works but the training will be extremely slow.
+
+>> Modules needed
+
+2. cudatoolkit >= 8  
+3. torch
+4. re
