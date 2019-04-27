@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals, print_function, division
+"""
+Created on Sat Apr 27 19:44:53 2019
+
+@author: Hrishikesh S
+"""
+
+# -*- coding: utf-8 -*-
 '''
 Created on Sat Apr 14 18:34:08 2019
 
@@ -331,61 +338,10 @@ def timeSince(since, percent):
     rs = es - s
     return '%s (- %s)' % (asMinutes(s), asMinutes(rs))
 
-# training the model
-def trainIters(encoder, decoder, n_iters, print_every=1000, plot_every=100, learning_rate=0.01):
-    # start a timer
-    start = time.time()
-    plot_losses = []
-    # Reset every print_every
-    print_loss_total = 0
-    # Reset every plot_every
-    plot_loss_total = 0
-    # initialize optimizers and criterion
-    encoder_optimizer = optim.SGD(encoder.parameters(), lr=learning_rate)
-    decoder_optimizer = optim.SGD(decoder.parameters(), lr=learning_rate)
-    # create set of training pairs
-    training_pairs = [tensorsFromPair(random.choice(pairs))
-                      for i in range(n_iters)]
-    criterion = nn.NLLLoss()
-
-    for iter in range(1, n_iters + 1):
-        training_pair = training_pairs[iter - 1]
-        input_tensor = training_pair[0]
-        target_tensor = training_pair[1]
-        # start empty losses array for plotting
-        loss = train(input_tensor, target_tensor, encoder,
-                     decoder, encoder_optimizer, decoder_optimizer, criterion)
-        print_loss_total += loss
-        plot_loss_total += loss
-
-        if iter % print_every == 0:
-            print_loss_avg = print_loss_total / print_every
-            print_loss_total = 0
-            print('%s (%d %d%%) %.4f' % (timeSince(start, iter / n_iters),
-                                         iter, iter / n_iters * 100, print_loss_avg))
-
-        if iter % plot_every == 0:
-            plot_loss_avg = plot_loss_total / plot_every
-            plot_losses.append(plot_loss_avg)
-            plot_loss_total = 0
-    # plot losses
-    showPlot(plot_losses)
-
 import matplotlib.pyplot as plt
 plt.switch_backend('agg')
 import matplotlib.ticker as ticker
 import numpy as np
-
-# for plotting
-def showPlot(points):
-    plt.figure()
-    fig, ax = plt.subplots()
-    # this locator puts ticks at regular intervals
-    loc = ticker.MultipleLocator(base=0.2)
-    ax.yaxis.set_major_locator(loc)
-    plt.plot(points)
-    plt.savefig('plots/loss.png')
-    plt.show()
 
 # to test the model with custom inputs
 # no targets, so we directly expect outputs
@@ -438,27 +394,6 @@ def evaluateRandomly(encoder, decoder, n=10):
 
 # initialize & train
 hidden_size = 256
-# build encoder
-encoder1 = EncoderRNN(input_lang.n_words, hidden_size).to(device)
-# build decoder
-attn_decoder1 = AttnDecoderRNN(hidden_size, output_lang.n_words, dropout_p=0.1).to(device)
-
-# train the models
-trainIters(encoder1, attn_decoder1, 75000, print_every=5000)
-
-# attributes of the encoder model
-print("Encoder Model's state dict")
-for i in encoder1.state_dict():
-    print(i, '\t', encoder1.state_dict()[i])
-
-# attributes of the decoder model
-print("Attention Decoder Model's state dict")
-for i in attn_decoder1.state_dict():
-    print(i, '\t', attn_decoder1.state_dict()[i])
-
-# save the models in models folder
-torch.save(encoder1.state_dict(), 'models/encoder_pyshake_to_pymodern')
-torch.save(attn_decoder1.state_dict(), 'models/attndecoder_pyshake_to_pymodern')
 
 # build encoder
 encoder1 = EncoderRNN(input_lang.n_words, hidden_size).to(device)
@@ -468,15 +403,7 @@ attn_decoder1 = AttnDecoderRNN(hidden_size, output_lang.n_words, dropout_p=0.1).
 # to load the saved load models from models folder
 encoder1.load_state_dict(torch.load('models/encoder_pyshake_to_pymodern'))
 attn_decoder1.load_state_dict(torch.load('models/attndecoder_pyshake_to_pymodern'))
-
-# for random evaluation
-evaluateRandomly(encoder1, attn_decoder1)
-
-# for evaluation along with visualization of attention matrix
-output_words, attentions = evaluate(
-    encoder1, attn_decoder1, "she is banished")
-plt.matshow(attentions.numpy())
-plt.savefig('plots/attention.png')
+print("Models loaded")
 
 # for visualizing attention matrix
 def showAttention(input_sentence, output_words, attentions):
@@ -507,15 +434,13 @@ def evaluateAndShowAttention(input_sentence):
     showAttention(input_sentence, output_words, attentions)
 
 
-# sample test 1
-evaluateAndShowAttention("what are thou")
-
-# sample test 2
-evaluateAndShowAttention("thou shalt die")
-
-# sample test 3
-evaluateAndShowAttention("yonder lies the fool")
-
-# sample test 4
-evaluateAndShowAttention("what would you have")
+# doesn't work for out of vocab words
+print("Input vocabulary:", input_lang.index2word)
+flag = True
+while flag:
+    input_sent = input("Enter a victorian era Sentence. Type exit to exit:")
+    if(input_sent == "exit"):
+        flag = False
+    else:
+        evaluateAndShowAttention(input_sent)
 
